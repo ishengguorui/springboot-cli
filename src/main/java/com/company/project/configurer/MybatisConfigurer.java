@@ -31,22 +31,29 @@ public class MybatisConfigurer {
         factory.setDataSource(dataSource);
         factory.setTypeAliasesPackage(MODEL_PACKAGE);
 
-        //配置分页插件，详情请查阅官方文档
+        // 配置分页插件
         PageHelper pageHelper = new PageHelper();
         Properties properties = new Properties();
-        properties.setProperty("pageSizeZero", "true");//分页尺寸为0时查询所有纪录不再执行分页
-        properties.setProperty("reasonable", "true");//页码<=0 查询第一页，页码>=总页数查询最后一页
-        properties.setProperty("supportMethodsArguments", "true");//支持通过 Mapper 接口参数来传递分页参数
+        properties.setProperty("pageSizeZero", "true"); // 分页尺寸为0时查询所有记录不再执行分页
+        properties.setProperty("reasonable", "true"); // 页码<=0 查询第一页，页码>=总页数查询最后一页
+        properties.setProperty("supportMethodsArguments", "true"); // 支持通过 Mapper 接口参数来传递分页参数
         pageHelper.setProperties(properties);
 
-        //添加插件
+        // 添加插件
         factory.setPlugins(new Interceptor[]{pageHelper});
 
-        //添加XML目录
+        // 添加XML目录
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         factory.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
+
+        // 启用驼峰命名规则
+        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+        configuration.setMapUnderscoreToCamelCase(true); // 开启下划线转驼峰
+        factory.setConfiguration(configuration);
+
         return factory.getObject();
     }
+
 
     @Bean
     public MapperScannerConfigurer mapperScannerConfigurer() {
